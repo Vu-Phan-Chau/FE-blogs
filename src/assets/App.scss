@@ -90,3 +90,30 @@
     float: left;
   }
 }
+
+.pagination__container {
+  width: 60%;
+  margin: 20px auto;
+  text-align: center;
+}
+
+.pagination__list {
+  display: inline-block;
+}
+
+.pagination__button {
+  background-color: #ffffff;
+  border: 1px solid #000000;
+  padding: 6px 12px;
+  cursor: pointer;
+
+  &:hover, &--active {
+    background-color: #000000;
+    color: #ffffff;
+  }
+
+  &--disabled {
+    pointer-events: none;
+    opacity: .5;
+  }
+}

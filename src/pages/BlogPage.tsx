@@ -12,6 +12,8 @@ const BlogPage = () => {
   const [data, setData] = useState<Array<blogTypes>>([]);
   const [dataFilter, setDataFilter] = useState<Array<blogTypes>>([]);
   const [refresh, setRefresh] = useState<boolean>(false);
+  const [totalBlogs, setTotalBlogs] = useState<number>(0);
+  const [pageNumber, setPageNumber] = useState<number>(0);
   const navigate = useNavigate();
 
   const filterData = (id: string) => data.filter(item => item._id === id);
@@ -40,15 +42,55 @@ const BlogPage = () => {
     setData(filteredSearch);
   };
 
-  useEffect(() => {
-    const getAllBlogs = async () => await httpService.get(API_SERVICES.ALL_BLOG, headers);
-    getAllBlogs()
+  const onPrevious = () =>
+    getAllBlogs(pageNumber-1).then(() => console.log('Get previous blogs pagination success!!!'));
+
+  const onNext = () =>
+    getAllBlogs(pageNumber+1).then(() => console.log('Get next blogs pagination success!!!'));
+
+  const onDisableButton = (key: string) => {
+    if (key === 'prev') return (pageNumber === 0) ? 'pagination__button--disabled' : '';
+
+    if (key === 'next') return (pageNumber === totalBlogs - 1) ? 'pagination__button--disabled' : '';
+  }
+
+  const getAllBlogs = async (size: number) => {
+    const body = {
+      "pageNumber": size
+    };
+    await httpService.post(API_SERVICES.ALL_BLOG, body, headers)
       .then(res => {
-        setData(res.data.blogs);
-        setDataFilter(res.data.blogs);
+        console.log(res.data.results);
+        setData(res.data.results.blogs);
+        setDataFilter(res.data.results.blogs);
+        setTotalBlogs(res.data.results.totalBlogs);
+        setPageNumber(res.data.results.pageNumber);
       }).catch(err => {
         console.log(err)
-    })
+      })
+  };
+
+  const onPagination = (size: number) =>
+    getAllBlogs(size).then(() => console.log('Get blogs pagination success!!!'));
+
+  const Pagination = () => {
+    const bindClass = (index: number) => (index === pageNumber) ? 'pagination__button--active' : '';
+    return <div className="pagination__list">
+      {
+        Array.from(Array(totalBlogs), (e, i) => {
+          return <button
+            className={"pagination__button " + bindClass(i)}
+            key={i}
+            onClick={() => onPagination(i)}
+          >
+            {i + 1}
+          </button>
+        })
+      }</div>
+  }
+
+  useEffect(() => {
+    getAllBlogs(0).then(() => console.log('Get all blogs success!!!'));
   }, [refresh])
 
   return (
@@ -78,6 +120,23 @@ const BlogPage = () => {
             </div>
             ))
           }
+        </div>
+        <div className="pagination">
+          <div className="pagination__container">
+            <button
+              className={"pagination__button " + onDisableButton('prev')}
+              onClick={onPrevious}
+            >
+              Prev
+            </button>
+            <Pagination />
+            <button
+              className={"pagination__button " + onDisableButton('next')}
+              onClick={onNext}
+            >
+              Next
+            </button>
+          </div>
         </div>
       </div>
     </div>
