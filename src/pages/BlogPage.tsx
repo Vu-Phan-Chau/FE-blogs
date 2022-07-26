@@ -50,7 +50,6 @@ const BlogPage = () => {
 
   const onDisableButton = (key: string) => {
     if (key === 'prev') return (pageNumber === 0) ? 'pagination__button--disabled' : '';
-
     if (key === 'next') return (pageNumber === totalBlogs - 1) ? 'pagination__button--disabled' : '';
   }
 
@@ -60,7 +59,6 @@ const BlogPage = () => {
     };
     await httpService.post(API_SERVICES.ALL_BLOG, body, headers)
       .then(res => {
-        console.log(res.data.results);
         setData(res.data.results.blogs);
         setDataFilter(res.data.results.blogs);
         setTotalBlogs(res.data.results.totalBlogs);
@@ -121,23 +119,27 @@ const BlogPage = () => {
             ))
           }
         </div>
-        <div className="pagination">
-          <div className="pagination__container">
-            <button
-              className={"pagination__button " + onDisableButton('prev')}
-              onClick={onPrevious}
-            >
-              Prev
-            </button>
-            <Pagination />
-            <button
-              className={"pagination__button " + onDisableButton('next')}
-              onClick={onNext}
-            >
-              Next
-            </button>
-          </div>
-        </div>
+        {
+          totalBlogs > 1
+          ? <div className="pagination">
+              <div className="pagination__container">
+                <button
+                  className={"pagination__button " + onDisableButton('prev')}
+                  onClick={onPrevious}
+                >
+                  Prev
+                </button>
+                <Pagination />
+                <button
+                  className={"pagination__button " + onDisableButton('next')}
+                  onClick={onNext}
+                >
+                  Next
+                </button>
+              </div>
+            </div>
+          : <></>
+        }
       </div>
     </div>
   );
