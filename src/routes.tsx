@@ -7,6 +7,7 @@ import ProfilePage from "./pages/ProfilePage";
 import HomePage from "./pages/HomePage";
 import BlogPage from "./pages/BlogPage";
 import CreateBlogComponent from "./components/CreateBlogComponent";
+import BlogDetailPage from "./pages/BlogDetailPage";
 
 const routes = () => (
   <Routes>
@@ -17,6 +18,7 @@ const routes = () => (
     <Route path="/profile" element={<ProfilePage />} />
     <Route path="/blog" element={<BlogPage />} />
     <Route path="/blog/create" element={<CreateBlogComponent />} />
+    <Route path="/blog/detail/:id" element={<BlogDetailPage />} />
   </Routes>
 );
 

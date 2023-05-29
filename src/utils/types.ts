@@ -1,5 +1,6 @@
 export interface blogTypes {
   title: string,
+  summary: string;
   description: string,
   url: string,
   category: string,
@@ -28,4 +29,9 @@ export interface modalTypes {
   title: string,
   message: string,
   buttons: Array<buttonObject>
+}
+
+export interface categoriesTypes {
+  key: string,
+  value: string
 }

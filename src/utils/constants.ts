@@ -5,10 +5,16 @@ export const API_SERVICES = {
   AUTH_LOGIN: `${ROOT_URL}/auth/login`,
   PROFILE: `${ROOT_URL}/profile`,
   PROFILE_UPDATE: `${ROOT_URL}/profile/update`,
+
   ALL_BLOG: `${ROOT_URL}/blogs`,
   CREATE_BLOG: `${ROOT_URL}/blogs/create`,
   UPDATE_BLOG: `${ROOT_URL}/blogs/update`,
   DELETE_BLOG: `${ROOT_URL}/blogs/delete`,
+  DETAIL_BLOG: `${ROOT_URL}/blogs/detail`,
+  QUERY_BLOG: `${ROOT_URL}/blogs/query`,
+
+  ALL_CATEGORIES: `${ROOT_URL}/categories/`,
+  CREATE_CATEGORIES: `${ROOT_URL}/categories/create`,
 };
 
 export const LOCAL_STORAGE = {
@@ -23,6 +29,14 @@ export const MODALS = {
   modalLogout: {
     title: 'Logout',
     message: 'Do you want logout?',
+    buttons: [
+      { key: 'no', value: 'No' },
+      { key: 'yes', value: 'Yes' }
+    ]
+  },
+  modalDelete: {
+    title: 'Delete',
+    message: 'Do you want delete?',
     buttons: [
       { key: 'no', value: 'No' },
       { key: 'yes', value: 'Yes' }

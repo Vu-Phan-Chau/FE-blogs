@@ -3,13 +3,18 @@ import React, {useEffect, useState} from "react";
 import {headers, httpService} from "../utils/http";
 import {API_SERVICES} from "../utils/constants";
 import {useLocation, useNavigate} from "react-router-dom";
+import CategoryModal from "../modals/CategoryModal";
+import {categoriesTypes} from "../utils/types";
 
 const CreateBlogComponent = () => {
   const [title, setTitle]= useState<string>('');
   const [description, setDescription]= useState<string>('');
+  const [summary, setSummary]= useState<string>('');
   const [url, setUrl]= useState<string>('');
-  const [category, setCategory]= useState<string>('');
+  const [category, setCategory]= useState<string>('all');
   const [id, setId]= useState<string>('');
+  const [hiddenModal, setHiddenModal]= useState<boolean>(false);
+  const [listCategory, setListCategory] = useState<Array<categoriesTypes>>([]);
 
   const navigate = useNavigate();
   const { state }: { state: any } = useLocation();
@@ -17,14 +22,14 @@ const CreateBlogComponent = () => {
   const onCreate = async () => {
     const blog = {
       title,
+      summary,
       description,
       url,
       category
     };
 
     await httpService.post(API_SERVICES.CREATE_BLOG, blog, headers)
-      .then(res => {
-        console.log(res.data);
+      .then(() => {
         navigate('/blog');
       }).catch(err => {
         console.log(err);
@@ -34,13 +39,13 @@ const CreateBlogComponent = () => {
   const onSave = async () => {
     const body = {
       title,
+      summary,
       description,
       url,
       category
     };
     await httpService.post(API_SERVICES.UPDATE_BLOG + `/${id}`, body, headers)
-      .then(res => {
-        console.log(res.data);
+      .then(() => {
         navigate('/blog');
       }).catch(err => {
         console.log(err)
@@ -49,15 +54,35 @@ const CreateBlogComponent = () => {
 
   const onCancel = () => navigate('/blog');
 
+  const onHandelButton = async (key: string, value: string) => {
+    if (key === 'add' && value) {
+      await httpService.post(API_SERVICES.CREATE_CATEGORIES, { value: value }, headers)
+        .then((res) => {
+          console.log(res.data)
+        }).catch(err => {
+          console.log(err)
+        })
+    }
+    setHiddenModal(!hiddenModal);
+  }
+
   useEffect(() => {
     if (state) {
       setTitle(state.data[0].title);
+      setSummary(state.data[0].summary);
       setDescription(state.data[0].description);
       setUrl(state.data[0].url);
       setCategory(state.data[0].category);
       setId(state.data[0]._id);
     }
-  }, [state])
+
+    const getAllCategories = async () => await httpService.get(API_SERVICES.ALL_CATEGORIES, headers)
+    getAllCategories()
+      .then((res) => {
+        setListCategory(res.data.categories)
+      })
+      .catch(err => console.log(err))
+  }, [state, hiddenModal])
 
   return (
     <div>
@@ -71,6 +96,14 @@ const CreateBlogComponent = () => {
             type="text"
             value={title}
             onChange={event => setTitle(event.target.value)}
+          />
+        </div>
+        <div className="form__row">
+          <label className="form__label form__label--top">Summary:</label>
+          <textarea
+            className="form__input form__input--description"
+            value={summary}
+            onChange={event => setSummary(event.target.value)}
           />
         </div>
         <div className="form__row">
@@ -92,12 +125,19 @@ const CreateBlogComponent = () => {
         </div>
         <div className="form__row">
           <label className="form__label">Category:</label>
-          <input
-            className="form__input"
-            type="text"
+          <select
+            className="form__select"
+            onChange={(event) => setCategory(event.target.value)}
             value={category}
-            onChange={event => setCategory(event.target.value)}
-          />
+          >
+            <option value="all">All</option>
+            {
+              listCategory.map((item) => {
+                return <option key={item.key} value={item.key}>{item.value}</option>
+              })
+            }
+          </select>
+          <button className="form__addCategory" onClick={() => setHiddenModal(true)}>Add category</button>
         </div>
         <div className="form__buttons">
           <button className="form__button" onClick={onCancel}>Cancel</button>
@@ -108,6 +148,9 @@ const CreateBlogComponent = () => {
           }
         </div>
       </div>
+      {
+        hiddenModal ? <CategoryModal onHandelButton={onHandelButton} /> : <></>
+      }
     </div>
   );
 };

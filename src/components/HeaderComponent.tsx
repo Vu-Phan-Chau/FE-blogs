@@ -1,16 +1,32 @@
 import {LOCAL_STORAGE, MODALS} from "../utils/constants";
-import {Link} from "react-router-dom";
-import Modal from "../modals/Modal";
+import {Link, useNavigate} from "react-router-dom";
 import {useAppDispatch, useAppSelector} from "../store/hooks";
 import {RootState} from "../store";
 import {handleModel} from "../store/authSlice";
+import {useState} from "react";
+import {modalTypes} from "../utils/types";
+import Modal from "../modals/Modal";
 
 const HeaderComponent = () => {
-  const dispatch = useAppDispatch()
+  const dispatch = useAppDispatch();
+  const navigate = useNavigate();
+  const [modalData, setModalData] = useState<modalTypes>(MODALS.modalLogout);
 
   const { isHiddenModel } = useAppSelector((state: RootState) => state.auth);
 
-  const onLogout = () => dispatch(handleModel(!isHiddenModel));
+  const onLogout = () => {
+    setModalData(MODALS.modalLogout);
+    dispatch(handleModel(!isHiddenModel));
+  };
+
+  const onHandleButton = (key: string) => {
+    console.log(key)
+    if (key === 'yes') {
+      localStorage.clear();
+      navigate('/auth/login');
+    }
+    dispatch(handleModel(!isHiddenModel));
+  };
 
   return (
     <header className="header">
@@ -27,7 +43,7 @@ const HeaderComponent = () => {
             <Link className="header__button" to="/auth/register">Register</Link>
           </>
       }
-      { isHiddenModel ?  <Modal dataModel={MODALS.modalLogout} /> : <></> }
+      { isHiddenModel ?  <Modal dataModel={modalData} onHandleButton={onHandleButton} /> : <></> }
     </header>
   );
 };

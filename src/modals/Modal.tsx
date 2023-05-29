@@ -1,24 +1,8 @@
 import "../assets/modals/Modal.scss"
-import {useAppDispatch, useAppSelector} from "../store/hooks";
-import {RootState} from "../store";
-import {handleModel} from "../store/authSlice";
-import {useNavigate} from "react-router-dom";
 import {modalTypes} from "../utils/types";
 
-const Modal = ({dataModel}: {dataModel: modalTypes}) => {
-  const dispatch = useAppDispatch();
-  const navigate = useNavigate();
-
-  const { isHiddenModel } = useAppSelector((state: RootState) => state.auth);
-
-  const onLogout = (key: string) => {
-    if (key === 'yes') {
-      localStorage.clear();
-      navigate('/auth/login');
-    }
-    dispatch(handleModel(!isHiddenModel));
-  };
-
+const Modal = ({dataModel, onHandleButton }: {dataModel: modalTypes, onHandleButton: (key: string) => void}) => {
+  console.log(dataModel)
   return (
     <div className="modal">
       <div className="modal__container">
@@ -31,7 +15,7 @@ const Modal = ({dataModel}: {dataModel: modalTypes}) => {
         <div className="modal__footer">
           {
             dataModel.buttons.map(item =>
-              <button key={item.key} className="modal__button" onClick={() => onLogout(item.key)}>{ item.value }</button>
+              <button key={item.key} className="modal__button" onClick={() => onHandleButton(item.key)}>{ item.value }</button>
             )
           }
         </div>
